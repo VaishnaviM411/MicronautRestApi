@@ -16,15 +16,23 @@ class ContentController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @Post //
-    fun textAnalysis(@Body content:JsonObject): HttpResponse<*> {
-        val text = content.get("content").stringValue
-        
+    fun textAnalysis(@Body content :JsonObject): HttpResponse<*> {
+        var text = content.get("content").stringValue
+        text = text.lowercase()
+        val words: List<String> = text.split(" ")
+        val wordCount = words.size
+        val charCountWithSpaces = text.length
+        val newText = text.replace(" ", "").replace("\n", "").replace("\r", "")
+        val charCountWoSpaces = newText.length
+        val lineCount = text.filter {it == '.'}.count()
+        val uniqSet = words.toSet()
+        val uniq = uniqSet.size
         val result = mutableMapOf(
-            "word_count" to 0,
-            "character_count_with_spaces" to 0,
-            "character_count_without_spaces" to 0,
-            "line_count" to 0,
-            "unique_words" to 0
+            "word_count" to wordCount,
+            "character_count_with_spaces" to charCountWithSpaces,
+            "character_count_without_spaces" to charCountWoSpaces,
+            "line_count" to lineCount,
+            "unique_words" to uniq
         )
 
         return HttpResponse.ok(result)
